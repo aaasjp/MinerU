@@ -41,6 +41,8 @@ def create_app():
     # By default, the OpenAPI documentation endpoints (openapi_url, docs_url, redoc_url) are enabled.
     # To disable the FastAPI docs and schema endpoints, set the environment variable MINERU_API_ENABLE_FASTAPI_DOCS=0.
     enable_docs = str(os.getenv("MINERU_API_ENABLE_FASTAPI_DOCS", "1")).lower() in ("1", "true", "yes")
+
+    os.environ['MINERU_MODEL_SOURCE'] = "local"
     app = FastAPI(
         openapi_url="/openapi.json" if enable_docs else None,
         docs_url="/docs" if enable_docs else None,
@@ -139,6 +141,9 @@ Options: ch, ch_server, ch_lite, en, korean, japan, chinese_cht, ta, te, ka, th,
         return_content_list: bool = Form(False, description="Return content list JSON in response"),
         return_images: bool = Form(False, description="Return extracted images in response"),
         response_format_zip: bool = Form(False, description="Return results as a ZIP file instead of JSON"),
+        f_draw_layout_bbox: bool = Form(False, description="Draw layout bounding boxes"),
+        f_draw_span_bbox: bool = Form(False, description="Draw span bounding boxes"),
+        f_dump_orig_pdf: bool = Form(False, description="Dump original PDF files"),
         start_page_id: int = Form(0, description="The starting page for PDF parsing, beginning from 0"),
         end_page_id: int = Form(99999, description="The ending page for PDF parsing, beginning from 0"),
 ):
@@ -201,12 +206,12 @@ Options: ch, ch_server, ch_lite, en, korean, japan, chinese_cht, ta, te, ka, th,
             formula_enable=formula_enable,
             table_enable=table_enable,
             server_url=server_url,
-            f_draw_layout_bbox=False,
-            f_draw_span_bbox=False,
+            f_draw_layout_bbox=f_draw_layout_bbox,
+            f_draw_span_bbox=f_draw_span_bbox,
             f_dump_md=return_md,
             f_dump_middle_json=return_middle_json,
             f_dump_model_output=return_model_output,
-            f_dump_orig_pdf=False,
+            f_dump_orig_pdf=f_dump_orig_pdf,
             f_dump_content_list=return_content_list,
             start_page_id=start_page_id,
             end_page_id=end_page_id,
@@ -249,6 +254,21 @@ Options: ch, ch_server, ch_lite, en, korean, japan, chinese_cht, ta, te, ka, th,
                         if os.path.exists(path):
                             zf.write(path, arcname=os.path.join(safe_pdf_name, f"{safe_pdf_name}_content_list.json"))
 
+                        path = os.path.join(parse_dir, f"{pdf_name}_content_list_v2.json")
+                        if os.path.exists(path):
+                            zf.write(path, arcname=os.path.join(safe_pdf_name, f"{safe_pdf_name}_content_list_v2.json"))
+                    if f_dump_orig_pdf:
+                        path = os.path.join(parse_dir, f"{pdf_name}_origin.pdf")
+                        if os.path.exists(path):
+                            zf.write(path, arcname=os.path.join(safe_pdf_name, f"{safe_pdf_name}_origin.pdf"))
+                    if f_draw_layout_bbox:
+                        path = os.path.join(parse_dir, f"{pdf_name}_layout.pdf")
+                        if os.path.exists(path):
+                            zf.write(path, arcname=os.path.join(safe_pdf_name, f"{safe_pdf_name}_layout.pdf"))
+                    if f_draw_span_bbox:
+                        path = os.path.join(parse_dir, f"{pdf_name}_span.pdf")
+                        if os.path.exists(path):
+                            zf.write(path, arcname=os.path.join(safe_pdf_name, f"{safe_pdf_name}_span.pdf"))
                     # 写入图片
                     if return_images:
                         images_dir = os.path.join(parse_dir, "images")
@@ -283,6 +303,13 @@ Options: ch, ch_server, ch_lite, en, korean, japan, chinese_cht, ta, te, ka, th,
                         data["model_output"] = get_infer_result("_model.json", pdf_name, parse_dir)
                     if return_content_list:
                         data["content_list"] = get_infer_result("_content_list.json", pdf_name, parse_dir)
+                        data["content_list_v2"] = get_infer_result("_content_list_v2.json", pdf_name, parse_dir)
+                    if f_dump_orig_pdf:
+                        data["orig_pdf"] = get_infer_result("_origin.pdf", pdf_name, parse_dir)
+                    if f_draw_layout_bbox:
+                        data["layout_pdf"] = get_infer_result("_layout.pdf", pdf_name, parse_dir)
+                    if f_draw_span_bbox:
+                        data["span_pdf"] = get_infer_result("_span.pdf", pdf_name, parse_dir)
                     if return_images:
                         images_dir = os.path.join(parse_dir, "images")
                         safe_pattern = os.path.join(glob.escape(images_dir), "*.jpg")

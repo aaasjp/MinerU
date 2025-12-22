@@ -20,6 +20,7 @@ def read_config():
     else:
         home_dir = os.path.expanduser('~')
         config_file = os.path.join(home_dir, CONFIG_FILE_NAME)
+        logger.info(f"config_file: {config_file}")
 
     if not os.path.exists(config_file):
         # logger.warning(f'{config_file} not found, using default configuration')
