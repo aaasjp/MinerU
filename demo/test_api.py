@@ -79,7 +79,7 @@ def test_file_parse_zip_response():
     """测试 /file_parse 接口 - ZIP 响应格式"""
     print("\n=== 测试 2: ZIP 响应格式 ===")
     
-    pdf_path = DEMO_PDFS_DIR / "高吉丽_01.png"
+    pdf_path = DEMO_PDFS_DIR / "【高级ai算法工程师_青岛 】唐小宇 9年.pdf"
     if not pdf_path.exists():
         print(f"错误: 测试文件不存在: {pdf_path}")
         return
