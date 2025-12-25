@@ -157,10 +157,10 @@ docker run --gpus all \
 docker run -d --name mineru-api \
   --gpus all \
   --shm-size 32g \
-  -p 8000:8000 \
+  -p 8002:8000 \
   --ipc=host \
   -e MINERU_MODEL_SOURCE=local \
-  mineru:latest \
+  crpi-14w4py2o64ex3hc2.cn-qingdao.personal.cr.aliyuncs.com/songjianping2022/mineru:sourcecode \
   mineru-api --host 0.0.0.0 --port 8000
 ```
 
