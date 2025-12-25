@@ -72,14 +72,14 @@ def sanitize_filename(filename: str) -> str:
     移除路径遍历字符, 保留 Unicode 字母、数字、._-
     禁止隐藏文件
     """
-    return filename
-    """
+    return filename 
+    '''
     sanitized = re.sub(r'[/\\\.]{2,}|[/\\]', '', filename)
     sanitized = re.sub(r'[^\w.-]', '_', sanitized, flags=re.UNICODE)
     if sanitized.startswith('.'):
         sanitized = '_' + sanitized[1:]
     return sanitized or 'unnamed'
-    """
+    '''
 
 def cleanup_file(file_path: str) -> None:
     """清理临时 zip 文件"""

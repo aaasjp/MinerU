@@ -13,7 +13,7 @@ API_ENDPOINT = f"{API_BASE_URL}/file_parse"
 # 测试文件路径
 DEMO_PDFS_DIR = Path(__file__).parent / "pdfs"
 
-backend = "vlm-mlx-engine"
+backend = "vlm-transformers"
 output_dir = "/Users/ailabuser7-1/Documents/test_output"
 
 
